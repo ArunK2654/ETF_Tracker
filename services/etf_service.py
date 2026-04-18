@@ -2,6 +2,7 @@ from providers.market_price_provider import MarketPriceProvider
 from providers.nav_price_provider import NavPriceProvider
 from core.logger import logger
 from core.exceptions import MarketDataError, NavDataError
+from core.notifier import send_telegram_message
 
 # to compute premium
 class ETFservice:
@@ -26,6 +27,10 @@ class ETFservice:
         logger.info("Calculating premium...")
 
         percent = ((market_price - inav_price)/inav_price) * 100
+
+        if percent < 10:
+            send_telegram_message(f"🚨 MON100 Alert!\nPremium: {round(percent, 2)}%")
+
         if percent > 0:
             premium_percent = round(percent,2)
             status = "premium"
